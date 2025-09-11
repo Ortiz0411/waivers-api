@@ -12,28 +12,32 @@ Los datos son almacenados en **PostgreSQL (Neon.Tech)**, y se envia un **correo 
 - Deploy en **Render**
 
 ## Tecnologías
-- ![Node.js](https://nodejs.org/)  
-- ![Express](https://expressjs.com/)  
-- ![TypeScript](https://www.typescriptlang.org/)  
-- ![PostgreSQL](https://www.postgresql.org/) con [Neon.tech](https://neon.tech/)  
-- ![Nodemailer](https://nodemailer.com/)  
-- ![PDFKit](https://pdfkit.org/)
+- [Node.js](https://nodejs.org/)  
+- [Express](https://expressjs.com/)  
+- [TypeScript](https://www.typescriptlang.org/)  
+- [PostgreSQL](https://www.postgresql.org/) con [Neon.tech](https://neon.tech/)  
+- [Nodemailer](https://nodemailer.com/)  
+- [PDFKit](https://pdfkit.org/)
 
 ## Instalacion
 1. Clonar repositorio:
+   ```bash
    git clone https://github.com/Ortiz0411/waivers-api.git
    cd waivers-api
 
-2. Instalar dependencias:
+3. Instalar dependencias:
+   ```bash
    npm install
 
-3. Crear archivo .env en raíz del proyecto:
+5. Crear archivo .env en raíz del proyecto:
+   ```env
    PORT=3000
    DATABASE_URL=postgres://usuario:password@host:5432/dbname
    EMAIL_USER=tu_correo@gmail.com
    EMAIL_PASS=tu_contraseña_2FA
 
-4. Ejecutar
+7. Ejecutar
+   ```bash
    npm run dev
 
 ## Contacto
