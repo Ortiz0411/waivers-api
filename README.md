@@ -41,7 +41,7 @@ Los datos son almacenados en **PostgreSQL (Neon.Tech)**, y se envia un **correo 
    npm run dev
 
 ## Contacto
-  -Autor: Andrey Ortiz
-  -Email: a.ortizmar11@gmail.com
-  -LinkedIn: www.linkedin.com/in/andrey-ortiz-m
+- Autor: Andrey Ortiz
+- Email: a.ortizmar11@gmail.com
+- LinkedIn: www.linkedin.com/in/andrey-ortiz-m
    
