@@ -11,8 +11,8 @@ app.use(express.json())
 
 app.use(cors({
     origin: [
-        "https://waivers-front.vercel.app/",
-        "https://waivers-front.vercel.app/form"
+        'http://localhost:5173',
+        'https://waivers-front.vercel.app'
     ],
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type']
