@@ -6,15 +6,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.genPdf = void 0;
 const pdfkit_1 = __importDefault(require("pdfkit"));
 const path_1 = __importDefault(require("path"));
+const https_1 = __importDefault(require("https"));
 const buffer_1 = require("buffer");
 const genPdf = (data) => {
+    const urlToImg = (url) => new Promise((resolve, reject) => {
+        https_1.default.get(url, (res) => {
+            const image = [];
+            res.on('data', (img) => img.push(img));
+            res.on('end', () => resolve(buffer_1.Buffer.concat(image)));
+            res.on('error', reject);
+        }).on('error', reject);
+    });
     const dateFormat = (date) => {
         const dat = new Date(date);
         if (isNaN(dat.getTime()))
             return String(date);
         return dat.toLocaleDateString('en-us', { month: '2-digit', day: '2-digit', year: 'numeric' });
     };
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             const doc = new pdfkit_1.default({ margin: 30, size: [800, 1500] });
             const buffers = [];
@@ -105,9 +114,18 @@ const genPdf = (data) => {
             doc.moveDown(1);
             doc.fontSize(15).text(`I, ${data.name}, here by certify that the above is correct to the best of my knoledge.`);
             doc.moveDown(1);
-            const sign = data.signature.replace(/^data:image\/\w+;base64,/, '');
-            const signImg = buffer_1.Buffer.from(sign, 'base64');
-            doc.image(signImg, { width: 300 });
+            if (data.signature_url) {
+                try {
+                    const sign = await urlToImg(data.signature_url);
+                    doc.image(sign, { width: 300 });
+                }
+                catch (err) {
+                    doc.text('Unable to load signature');
+                }
+            }
+            else {
+                doc.text('Unable to load signature');
+            }
             doc.end();
         }
         catch (err) {

@@ -1,5 +1,13 @@
+/** 
+ * Genera PDF usando PDFKit.
+ * - Carga logo desde assets.
+ * - Descarga firma desde URL
+ */
+
 import PDFDocument from 'pdfkit'
 import path from 'path'
+import https from 'https'
+import sharp from 'sharp'
 import { waiver } from '../types'
 import { Buffer } from 'buffer'
 
@@ -7,6 +15,34 @@ import { Buffer } from 'buffer'
 export const genPdf = (data: waiver): Promise<Buffer> => {
 
 
+    /** Descarga imagen via HTTPS */
+    const urlToImg = (url: string): Promise<Buffer> =>
+        new Promise((resolve, reject) => {
+            https.get(url, (res) => {
+
+                if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                    return https.get(res.headers.location, (res2) => { 
+                        const image: Buffer[] = []
+                        res2.on('data', (img) => image.push(img))
+                        res2.on('end', () => resolve(Buffer.concat(image)))
+                        res2.on('error', reject)
+                    }).on('error', reject)
+                }
+
+                if (res.statusCode && res.statusCode !== 200) {
+                    return reject(new Error(`HTTP ${res.statusCode} al descargar imagen`))
+                }
+                
+
+                const image: Buffer[] = []
+                res.on('data', (img) => image.push(img))
+                res.on('end', () => resolve(Buffer.concat(image)))
+                res.on('error', reject)
+        }).on('error', reject)
+    })
+
+
+    /** Formatea fechas a MM/DD/YYYY */
     const dateFormat = (date: string): string => {
         const dat = new Date(date)
         if (isNaN(dat.getTime())) return String(date)
@@ -14,10 +50,11 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
     }
 
 
-    return new Promise((resolve, reject) => {
+    return new Promise( async (resolve, reject) => {
 
         try {
 
+            /** Medidas del documento */
             const doc = new PDFDocument({ margin: 30, size: [800, 1500] })
             const buffers: Buffer[] = []
 
@@ -27,13 +64,16 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
             })           
 
             
+            /** Inserta logo */
             doc.image(path.join(__dirname, '../assets/rcrlogo.png'), 30, 30, {width: 120})
 
 
+            /** Titulo */
             doc.fontSize(24).text('\nWHITEWATER RAFTING WAIVER', {align: 'center', underline: true})
             doc.moveDown()
 
 
+            /** Condiciones de waiver */
             doc.fontSize(15).text(
                 `  The undersigned, ${data.name}, understands that has made arrangements for a White Water River Rafting or River Floating `+
                 'excursion provided by Rincon Corobici S.A. in Costa Rica. I am fully aware that white water rafting has inherent '+
@@ -84,7 +124,8 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
             doc.moveDown(1)
 
 
-            const conditions: { label: string; value: boolean }[] = [
+            /** Lista de condiciones en dos columnas */
+            const conditions: { label: string, value: boolean }[] = [
                 { label: "Alcoholism", value: data.alcoholism },
                 { label: "Claustrophobia", value: data.claustrophobia },
                 { label: "Dizziness", value: data.dizzines },
@@ -120,14 +161,15 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
             doc.moveDown(2)
 
 
+            /** Fechas importantes */
             doc.fontSize(15).text(`Are you pregnant? How many months?: ${data.pregnancy}.`)
             doc.moveDown(1)
 
-            doc.fontSize(15).text(`List all medications you are currently using: ${dateFormat(data.medications)}.`)
-            doc.fontSize(15).text(`Date of last medications you are currently using: ${dateFormat(data.date_medications)}.`)
+            doc.fontSize(15).text(`List all medications you are currently using: ${data.medications}.`)
+            doc.fontSize(15).text(`Date of last medications you are currently using: ${dateFormat(data.date_medications as any)}.`)
             doc.moveDown(1)
 
-            doc.fontSize(15).text(`Date of last medical examination: ${dateFormat(data.date_examination)}.`)
+            doc.fontSize(15).text(`Date of last medical examination: ${dateFormat(data.date_examination as any)}.`)
             doc.fontSize(15).text(`Date of last chest X-Ray: ${dateFormat(data.date_xray)}.`)
             doc.moveDown(1)
 
@@ -139,9 +181,21 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
             doc.fontSize(15).text(`I, ${data.name}, here by certify that the above is correct to the best of my knoledge.`)
             doc.moveDown(1)
             
-            const sign = data.signature.replace(/^data:image\/\w+;base64,/, '')
-            const signImg = Buffer.from(sign, 'base64')
-            doc.image(signImg, { width: 300 })
+            
+            /** Descarga e inserta firma desde URL */
+            if (data.signature_url) {
+                try {
+                    const sign = await urlToImg(data.signature_url)
+
+                    /** Convierte de WebP a PNG */
+                    const signPng = await sharp(sign).png().toBuffer()
+                    doc.image(signPng, {width: 300})
+                } catch (err) {
+                    doc.text('Unable to load signature')
+                }
+            } else {
+                doc.text('Unable to load signature')
+            }
 
             doc.end()
             

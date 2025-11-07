@@ -1,27 +1,32 @@
 import express from 'express'
 import dotenv from 'dotenv'
+dotenv.config()
 import cors from 'cors'
+import helmet from 'helmet'
+import cookieParser from 'cookie-parser'
+
 import waiverRouter from './routes/waivers'
+import authRouter from './routes/auth'
 
 
-dotenv.config();
 const app = express()
-app.use(express.json())
-
 
 app.use(cors({
     origin: [
-        'http://localhost:5173',
-        'https://waivers-front.vercel.app'
+        process.env.FRONT_LOCAL!,
+        process.env.FRONT_PROD!
     ],
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type']
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
+app.use(helmet())
+app.use(cookieParser())
+app.use(express.json())
 
-const PORT = Number(process.env.PORT)
 
-
+app.use('/api/auth', authRouter)
 app.use('/api/waivers', waiverRouter)
 
 
@@ -30,6 +35,9 @@ app.get('/health', (_req, res) => {
 })
 
 
+const PORT = Number(process.env.PORT) || 3000
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en ${PORT}`)
 })
+
+export default app

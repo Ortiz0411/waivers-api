@@ -1,54 +1,60 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addWaiver = exports.getWaiverById = exports.getWaivers = void 0;
-const pg_1 = require("pg");
-const emailService_1 = require("./emailService");
-const clientConn = {
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-};
-const query = async (query, params) => {
-    const client = new pg_1.Client(clientConn);
-    await client.connect();
-    try {
-        const result = await client.query(query, params);
-        return result.rows;
-    }
-    finally {
-        await client.end();
-    }
-};
-const getWaivers = async () => {
-    return query('SELECT * FROM waivers ORDER BY id DESC');
-};
 exports.getWaivers = getWaivers;
-const getWaiverById = async (id) => {
-    const rows = await query('SELECT * FROM waivers WHERE id = $1', [id]);
-    return rows[0];
-};
-exports.getWaiverById = getWaiverById;
-const addWaiver = async (data) => {
-    const rows = await query(`INSERT INTO waivers (
-        name, legal_guardian, email, tour_date,
-        alcoholism, claustrophobia, dizzines, ear_infection, epilepsy,
-        peptic_ulcers, respiratory_problems, neck_injure, back_problems,
-        drug_use, depression, heart_problems, recent_operation,
-        headaches, overweight, other_condition, pregnancy,
-        medications, date_medications, date_examination, date_xray,
-        other_areas, signature, ip_address, user_agent
-        ) VALUES (
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29
-        ) RETURNING *`, [
-        data.name, data.legal_guardian, data.email, data.tour_date,
-        data.alcoholism, data.claustrophobia, data.dizzines, data.ear_infection, data.epilepsy,
-        data.peptic_ulcers, data.respiratory_problems, data.neck_injure, data.back_problems,
-        data.drug_use, data.depression, data.heart_problems, data.recent_operation,
-        data.headaches, data.overweight, data.other_condition, data.pregnancy,
-        data.medications, data.date_medications, data.date_examination, data.date_xray,
-        data.other_areas, data.signature, data.ip_address, data.user_agent,
-    ]);
-    const waiver = rows[0];
-    (0, emailService_1.sendEmail)(waiver).catch((err) => console.error('Erro en enviar email:', err));
-    return waiver;
-};
+exports.getwaiverById = getwaiverById;
 exports.addWaiver = addWaiver;
+const supabase_1 = require("./supabase");
+const crypto_1 = __importDefault(require("crypto"));
+const emailService_1 = require("./emailService");
+function urlBuffer(dataUrl) {
+    const match = dataUrl?.match(/^data:(.+);base64,(.*)$/);
+    if (!match)
+        throw new Error('Firma inválida (no es dataURL base64)');
+    const mime = match[1];
+    const b64 = match[2];
+    const buffer = Buffer.from(b64, 'base64');
+    let ext = 'png';
+    if (mime.includes('svg'))
+        ext = 'svg';
+    else if (mime.includes('jpeg'))
+        ext = 'jpg';
+    else if (mime.includes('jpg'))
+        ext = 'jpg';
+    return { mime, buffer, ext };
+}
+async function uploadsign(dataUrl) {
+    const { mime, buffer, ext } = urlBuffer(dataUrl);
+    const name = `signatures/${new Date().toISOString().slice(0, 10)}_${crypto_1.default.randomUUID()}.${ext}`;
+    const { error: err } = await supabase_1.supabase.storage.from('signatures').upload(name, buffer, { contentType: mime, upsert: false });
+    if (err)
+        throw err;
+    const { data } = supabase_1.supabase.storage.from('signatures').getPublicUrl(name);
+    return data.publicUrl;
+}
+async function getWaivers() {
+    const { data } = await supabase_1.supabase.from('waivers').select('*').order('id', { ascending: false });
+    return data;
+}
+async function getwaiverById(id) {
+    const { data } = await supabase_1.supabase.from('waivers').select('*').eq('id', id).maybeSingle();
+    return data;
+}
+async function addWaiver(body) {
+    const signUrl = await uploadsign(body.signature_url);
+    const insert = {
+        name: body.name, legal_guardian: body.legal_guardian, email: body.email, tour_date: body.tour_date,
+        alcoholism: !!body.alcoholism, claustrophobia: !!body.claustrophobia, dizzines: !!body.dizzines,
+        ear_infection: body.ear_infection, epilepsy: !!body.epilepsy, peptic_ulcers: !!body.peptic_ulcers,
+        respiratory_problems: !!body.respiratory_problems, neck_injure: !!body.neck_injure, back_problems: !!body.back_problems,
+        drug_use: !!body.drug_use, depression: !!body.depression, heart_problems: !!body.heart_problems, recent_operation: !!body.recent_operation,
+        headaches: !!body.headaches, overweight: !!body.overweight,
+        other_condition: body.other_condition, pregnancy: Number(body.pregnancy), medications: body.medications, date_medications: body.date_medications,
+        date_examination: body.date_examination, date_xray: body.date_xray, other_areas: body.other_areas, signUrl
+    };
+    const { data } = await supabase_1.supabase.from('waivers').insert([insert]).select().single();
+    (0, emailService_1.sendEmail)(data);
+    return data;
+}

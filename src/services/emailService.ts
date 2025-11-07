@@ -1,7 +1,13 @@
+/**
+ * Envio de correo de confirmacion con nodemailer.
+ * - Configuracion SMTP en .env.
+ * - Adjunta pdf del waiver ingresado.
+ */
+
 import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
-import { waiver } from '../types';
-import { genPdf } from './pdfService';
+import { waiver } from '../types'
+import { genPdf } from './pdfService'
 
 dotenv.config()
 
