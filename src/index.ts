@@ -12,13 +12,21 @@ import authRouter from './routes/auth'
 const app = express()
 
 app.use(cors({
-    origin: [
-        process.env.FRONT_LOCAL!,
-        process.env.FRONT_PROD!
-    ],
+    origin: function (origin, callback) {
+        const allowed = [
+            process.env.FRONT_LOCAL,
+            process.env.FRONT_PROD,
+        ];
+
+        const vercel = origin?.includes(".vercel.app");
+
+        if (!origin || allowed.includes(origin) || vercel) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
 app.use(helmet())

@@ -44,6 +44,7 @@ router.post('/login', loginLimit, async (req, res) => {
         { expiresIn: '7d' }
     )
 
+    res.header("Access-Control-Allow-Credentials", "true")
     res.cookie(cookie, token, cookieOption())
     return res.json({ ok: true })
 })
@@ -51,6 +52,7 @@ router.post('/login', loginLimit, async (req, res) => {
 
 /** Limpia la cookie de login */
 router.post('/logout', (_req, res) => {
+    res.header("Access-Control-Allow-Credentials", "true")
     res.clearCookie(cookie, cookieOption())
     return res.json({ ok: true })
 })

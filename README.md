@@ -1,23 +1,27 @@
+redme de api
+
 # WAIVERS API
 
 API REST desarrollada en **Node.js + Express + TypeScript** que permite el registro de waivers para tours de rafting.
-Los datos son almacenados en **PostgreSQL (Neon.Tech)**, y se envia un **correo de confirmación con PDF adjunto** con los datos completados por el participante.
+Los datos se almacenan en **Supabase (PostgreSQL + Storage)**, y se envia un **correo automático de confirmación, con PDF adjunto** que contiene la informacion completada por el participante.
 
 ## Características
 - CRUD Básico (GET, POST).
-- Conexión a PostgreSQL usando **pg (Client)**.
-- Envío de emails automaticos con **Nodemailer**
-- Generación de **PDF con PDFKIT**
-- Válidaciones básicas
-- Deploy en **Render**
+- Conexión a **Supabase** (Base de datos y Storage para firmas digitales).
+- Envío de emails automaticos con **Nodemailer**.
+- Generación de **PDF con PDFKIT**.
+- Autenticación con **JWT**.
+- Deploy en **Vercel (serverless Express backend)**
 
 ## Tecnologías
-- [Node.js](https://nodejs.org/)  
-- [Express](https://expressjs.com/)  
-- [TypeScript](https://www.typescriptlang.org/)  
-- [PostgreSQL](https://www.postgresql.org/) con [Neon.tech](https://neon.tech/)  
-- [Nodemailer](https://nodemailer.com/)  
+- [Node.js](https://nodejs.org/)
+- [Express](https://expressjs.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Supabase](https://supabase.com/)
+- [Nodemailer](https://nodemailer.com/)
 - [PDFKit](https://pdfkit.org/)
+- [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
+- [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
 
 ## Instalacion
 1. Clonar repositorio:
@@ -31,17 +35,37 @@ Los datos son almacenados en **PostgreSQL (Neon.Tech)**, y se envia un **correo 
 
 5. Crear archivo .env en raíz del proyecto:
    ```env
-   PORT=3000
-   DATABASE_URL=postgres://usuario:password@host:5432/dbname
-   EMAIL_USER=tu_correo@gmail.com
-   EMAIL_PASS=tu_contraseña_2FA
+   PORT=4000
+   NODE_ENV=development
 
-7. Ejecutar
+   BASE_URL=http://localhost:4000
+   FRONT_LOCAL=http://localhost:5173
+   FRONT_PROD=https://tu-frontend.vercel.app
+
+   SUPABASE_URL=https://tu-instancia.supabase.co
+   SUPABASE_ROLE=tu_service_role_key
+   DB_TABLE=tu_tabla_supabase
+   SUPABASE_BUCKET=tu_bucket_supabase
+
+   JWT=clave_secreta
+   ADMIN_USER=admin
+   ADMIN_HASH=hash_bcrypt
+
+   SMTP_HOST=smtp.tuservidor.com
+   SMTP_PORT=587
+   SMTP_USER=ejemploemail@tuemail.com
+   SMTP_PASS=tu_contraseña
+   
+
+7. Ejecutar modo desarrollo
    ```bash
    npm run dev
+
+8. Compilar produccion
+   ```bash
+   npm run build
 
 ## Contacto
 - Autor: Andrey Ortiz
 - Email: a.ortizmar11@gmail.com
 - LinkedIn: www.linkedin.com/in/andrey-ortiz-m
-   
