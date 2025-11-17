@@ -2,7 +2,7 @@
   "name": "waivers-api",
   "version": "1.0.0",
   "description": "API para manejo de waivers (Express + Supabase + Nodemailer)",
-  "main": "build/index.js",
+  "main": "build/index.ts",
   "type": "commonjs",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",

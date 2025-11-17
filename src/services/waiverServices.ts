@@ -3,8 +3,8 @@ import { waiver, WaiverTable } from '../types'
 import crypto from 'crypto'
 import { sendEmail } from "./emailService"
 
-const WAIVERS_TABLE = process.env.WAIVERS_TABLE
-const SIGN_BUCKET = process.env.SIGN_BUCKET
+const TABLE = process.env.DB_TABLE
+const BUCKET = process.env.SUPABASE_BUCKET
 
 /** Calcula nivel de riesgo segun condiciones */
 function calcRisk(body: any) {
@@ -43,11 +43,11 @@ function signBuffer(dataUrl: string): Buffer {
 async function uploadsign(dataUrl:string): Promise<string> {
 
     const buffer = signBuffer(dataUrl)
-    const name = `${SIGN_BUCKET}/${new Date().toISOString().slice(0, 10)}_${crypto.randomUUID()}.webp`
+    const name = `${BUCKET}/${new Date().toISOString().slice(0, 10)}_${crypto.randomUUID()}.webp`
 
-    await supabase.storage.from(SIGN_BUCKET!).upload(name, buffer, {contentType: 'image/webp', upsert: false})
+    await supabase.storage.from(BUCKET!).upload(name, buffer, {contentType: 'image/webp', upsert: false})
 
-    const { data } = supabase.storage.from(SIGN_BUCKET!).getPublicUrl(name)
+    const { data } = supabase.storage.from(BUCKET!).getPublicUrl(name)
     return data.publicUrl
 }
 
@@ -55,7 +55,7 @@ async function uploadsign(dataUrl:string): Promise<string> {
 /** Retorna lista con campos basicos de waivers */
 export async function getWaivers(): Promise<WaiverTable[]> {
 
-    const { data } = await supabase.from(WAIVERS_TABLE!).select('id, name, email, legal_guardian, tour_date, created_at, risk_level').order('id', {ascending: false})
+    const { data } = await supabase.from(TABLE!).select('id, name, email, legal_guardian, tour_date, created_at, risk_level').order('id', {ascending: false})
     return data as WaiverTable[]
 }
 
@@ -63,7 +63,7 @@ export async function getWaivers(): Promise<WaiverTable[]> {
 /** Retorna todos los campos de un waiver especifico */
 export async function getwaiverById(id: number): Promise<waiver> {
 
-    const { data } = await supabase.from(WAIVERS_TABLE!).select('*').eq('id', id).maybeSingle()
+    const { data } = await supabase.from(TABLE!).select('*').eq('id', id).maybeSingle()
     return data  as waiver
 }
 

@@ -33,7 +33,6 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
                     return reject(new Error(`HTTP ${res.statusCode} al descargar imagen`))
                 }
                 
-
                 const image: Buffer[] = []
                 res.on('data', (img) => image.push(img))
                 res.on('end', () => resolve(Buffer.concat(image)))
@@ -179,7 +178,7 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
             doc.moveDown(1)
 
             doc.fontSize(15).text(`I, ${data.name}, here by certify that the above is correct to the best of my knoledge.`)
-            doc.moveDown(1)
+            doc.moveDown(2)
             
             
             /** Descarga e inserta firma desde URL */
@@ -189,7 +188,7 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
 
                     /** Convierte de WebP a PNG */
                     const signPng = await sharp(sign).png().toBuffer()
-                    doc.image(signPng, {width: 300})
+                    doc.image(signPng, {width: 500})
                 } catch (err) {
                     doc.text('Unable to load signature')
                 }
