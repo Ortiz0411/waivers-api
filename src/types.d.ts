@@ -1,3 +1,4 @@
+// Incluir email: string en caso de guardar correo
 export interface waiver {
 
     id?: number
@@ -5,7 +6,6 @@ export interface waiver {
 
     name: string
     legal_guardian: string
-    email: string
     tour_date: string
 
     alcoholism: boolean
@@ -38,7 +38,7 @@ export interface waiver {
     risk_level: string
 }
 
-
+// Incluir email: string en caso de guardar correo
 export type WaiverTable = {
     id: number
     name: string

@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser'
 
 import waiverRouter from './routes/waivers'
 import authRouter from './routes/auth'
+import { monitor } from './scripts/monitor'
 
 
 const app = express()
@@ -42,8 +43,13 @@ app.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok', uptime: process.uptime() })
 })
 
+app.get('/monitor/vercel', async (_req, res) => {
+    const result = await monitor()
+    res.json({ alerts: result })
+})
 
-/*const PORT = Number(process.env.PORT) || 3000
+/*
+const PORT = Number(process.env.PORT) || 3000
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en ${PORT}`)
 })*/

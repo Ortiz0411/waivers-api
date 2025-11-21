@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
 import { waiver, WaiverTable } from '../types'
 import crypto from 'crypto'
-import { sendEmail } from "./emailService"
+//import { sendEmail } from "./emailService"
 
 const TABLE = process.env.DB_TABLE
 const BUCKET = process.env.SUPABASE_BUCKET
@@ -55,7 +55,8 @@ async function uploadsign(dataUrl:string): Promise<string> {
 /** Retorna lista con campos basicos de waivers */
 export async function getWaivers(): Promise<WaiverTable[]> {
 
-    const { data } = await supabase.from(TABLE!).select('id, name, email, legal_guardian, tour_date, created_at, risk_level').order('id', {ascending: false})
+    // Incluir email en caso de enviar correo
+    const { data } = await supabase.from(TABLE!).select('id, name, legal_guardian, tour_date, created_at, risk_level').order('id', {ascending: false})
     return data as WaiverTable[]
 }
 
@@ -75,8 +76,9 @@ export async function addWaiver(body: any): Promise<waiver> {
 
     const risk_level = calcRisk(body)
 
+    // Incluir email: body.email en caso de guardar correo
     const insert = {
-        name: body.name, legal_guardian: body.legal_guardian, email: body.email, tour_date: body.tour_date,
+        name: body.name, legal_guardian: body.legal_guardian, tour_date: body.tour_date,
         alcoholism: !!body.alcoholism, claustrophobia: !!body.claustrophobia, dizzines: !!body.dizzines,
         ear_infection: !!body.ear_infection, epilepsy: !!body.epilepsy, peptic_ulcers: !!body.peptic_ulcers,
         respiratory_problems: !!body.respiratory_problems, neck_injure: !!body.neck_injure, back_problems: !!body.back_problems,
@@ -90,6 +92,6 @@ export async function addWaiver(body: any): Promise<waiver> {
     const { data } = await supabase.from('waivers').insert([insert]).select().single()
 
     /** Envio de email en segundo plano, no espera */
-    sendEmail(data as waiver)
+    //sendEmail(data as waiver)
     return data as waiver
 }

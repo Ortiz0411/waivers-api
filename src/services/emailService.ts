@@ -4,6 +4,7 @@
  * - Adjunta pdf del waiver ingresado.
  */
 
+/*
 import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
 import { waiver } from '../types'
@@ -88,3 +89,5 @@ export const sendEmail = async (waiver: waiver) => {
     }
     await transporter.sendMail(mailOptions)
 }
+
+*/
