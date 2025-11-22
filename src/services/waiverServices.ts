@@ -6,7 +6,7 @@ import crypto from 'crypto'
 const TABLE = process.env.DB_TABLE
 const BUCKET = process.env.SUPABASE_BUCKET
 
-/** Calcula nivel de riesgo segun condiciones */
+/** Calculate risk level by conditions */
 function calcRisk(body: any) {
 
     const conditions = [body.alcoholism, body.claustrophobia, body.dizzines, body.ear_infection,
@@ -28,7 +28,7 @@ function calcRisk(body: any) {
 }
 
 
-/** Convierte URL WEBP en Buffer */
+/** Convert WEBP URLs to Buffer */
 function signBuffer(dataUrl: string): Buffer {
 
     if (!dataUrl || !dataUrl.startsWith("data:image/webp;base64,")) {
@@ -39,7 +39,7 @@ function signBuffer(dataUrl: string): Buffer {
 }
 
 
-/** Sube la firma a Supabase Storage y retorna URL */
+/** Upload the signature to Supabase Storage and return the URL */
 async function uploadsign(dataUrl:string): Promise<string> {
 
     const buffer = signBuffer(dataUrl)
@@ -52,16 +52,16 @@ async function uploadsign(dataUrl:string): Promise<string> {
 }
 
 
-/** Retorna lista con campos basicos de waivers */
+/** Returns list with basic waiver fields */
 export async function getWaivers(): Promise<WaiverTable[]> {
 
-    // Incluir email en caso de enviar correo
+    // Include email if sending mail
     const { data } = await supabase.from(TABLE!).select('id, name, legal_guardian, tour_date, created_at, risk_level').order('id', {ascending: false})
     return data as WaiverTable[]
 }
 
 
-/** Retorna todos los campos de un waiver especifico */
+/** Returns all fields from a specific waiver */
 export async function getwaiverById(id: number): Promise<waiver> {
 
     const { data } = await supabase.from(TABLE!).select('*').eq('id', id).maybeSingle()
@@ -69,14 +69,14 @@ export async function getwaiverById(id: number): Promise<waiver> {
 }
 
 
-/** Sube firma a Storage y obtiene url. Calula risk_level. Inserta en DB y retorna resultado. Envia email de confirmacion */
+/** Insert into DB and return result. Sends confirmation email. */
 export async function addWaiver(body: any): Promise<waiver> {
 
     const signature_url = await uploadsign(body.signature)
 
     const risk_level = calcRisk(body)
 
-    // Incluir email: body.email en caso de guardar correo
+    // Include email: body.email if saving email
     const insert = {
         name: body.name, legal_guardian: body.legal_guardian, tour_date: body.tour_date,
         alcoholism: !!body.alcoholism, claustrophobia: !!body.claustrophobia, dizzines: !!body.dizzines,
@@ -91,7 +91,7 @@ export async function addWaiver(body: any): Promise<waiver> {
     delete (insert as any).signature
     const { data } = await supabase.from('waivers').insert([insert]).select().single()
 
-    /** Envio de email en segundo plano, no espera */
+    /** Email sent in the background, no waiting */
     //sendEmail(data as waiver)
     return data as waiver
 }

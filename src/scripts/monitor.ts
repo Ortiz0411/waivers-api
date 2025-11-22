@@ -1,13 +1,13 @@
 /**
- * Monitorea el uso de Vercel.
- * Devuelve lista de alertas al superar el 75%
+ * Monitor the use of Vercel.
+ * Returns list of alerts when exceeding 75%
  */
 export async function monitor() {
 
     try {
 
-        // Obtiene uso de Vercel
-        const url = `https://api.vercel.com/v1/usage`
+        // Vercel usage
+        const url = process.env.VERCEL_MONITOR_URL!
 
         const res = await fetch(url, {
             headers: {
@@ -15,22 +15,22 @@ export async function monitor() {
             }
         })
 
-        // Convierte a JSON
+        // Convert to JSON
         const data: any = await res.json()
 
         const alerts = []
 
-        // Analiza cada recurso devuelto por Vercel
+        // Analyze resources returned by Vercel
         for (const item of data.usage) {
             const used = item.used
             const limit = item.limit
 
-            // Omite resultado en 0 o negativos
+            // Omit results of 0 or negative
             if (!limit || limit <= 0) continue
 
             const total = used / limit
 
-            // Si supera el 75% se agrega a las alertas
+            // If it exceeds 75%, it is added to the alerts.
             if (total >= 0.75) {
                 alerts.push({
                     resource: item.resource,
@@ -41,7 +41,7 @@ export async function monitor() {
             }
         }
 
-        // Devuelve si hay alertas
+        // Returns if there are alerts
         return alerts.length > 0 ? alerts : null
 
     } catch (err) {

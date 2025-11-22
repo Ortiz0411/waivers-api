@@ -1,7 +1,7 @@
 /** 
- * Genera PDF usando PDFKit.
- * - Carga logo desde assets.
- * - Descarga firma desde URL
+ * Generate PDF using PDFKit.
+ * - Load logo from assets.
+ * - Download signature from URL
  */
 
 
@@ -16,7 +16,7 @@ import { Buffer } from 'buffer'
 export const genPdf = (data: waiver): Promise<Buffer> => {
 
 
-    /** Descarga imagen via HTTPS */
+    /** Download image via HTTPS */
     const urlToImg = (url: string): Promise<Buffer> =>
         new Promise((resolve, reject) => {
             https.get(url, (res) => {
@@ -42,7 +42,7 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
     })
 
 
-    /** Formatea fechas a MM/DD/YYYY */
+    /** Format dates to MM/DD/YYYY */
     const dateFormat = (date: string): string => {
         const dat = new Date(date)
         if (isNaN(dat.getTime())) return String(date)
@@ -54,7 +54,7 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
 
         try {
 
-            /** Medidas del documento */
+            /** Document dimensions */
             const doc = new PDFDocument({ margin: 30, size: [800, 1500] })
             const buffers: Buffer[] = []
 
@@ -64,16 +64,16 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
             })           
 
             
-            /** Inserta logo */
+            /** Insert logo */
             doc.image(path.join(__dirname, '../assets/rcrlogo.png'), 30, 30, {width: 120})
 
 
-            /** Titulo */
+            /** Title */
             doc.fontSize(24).text('\nWHITEWATER RAFTING WAIVER', {align: 'center', underline: true})
             doc.moveDown()
 
 
-            /** Condiciones de waiver */
+            /** Waiver conditions */
             doc.fontSize(15).text(
                 `  The undersigned, ${data.name}, understands that has made arrangements for a White Water River Rafting or River Floating `+
                 'excursion provided by Rincon Corobici S.A. in Costa Rica. I am fully aware that white water rafting has inherent '+
@@ -124,7 +124,7 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
             doc.moveDown(1)
 
 
-            /** Lista de condiciones en dos columnas */
+            /** List of conditions in two columns */
             const conditions: { label: string, value: boolean }[] = [
                 { label: "Alcoholism", value: data.alcoholism },
                 { label: "Claustrophobia", value: data.claustrophobia },
@@ -161,7 +161,7 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
             doc.moveDown(2)
 
 
-            /** Fechas importantes */
+            /** Important dates */
             doc.fontSize(15).text(`Are you pregnant? How many months?: ${data.pregnancy}.`)
             doc.moveDown(1)
 
@@ -182,12 +182,12 @@ export const genPdf = (data: waiver): Promise<Buffer> => {
             doc.moveDown(2)
             
             
-            /** Descarga e inserta firma desde URL */
+            /** Download and insert signature from URL */
             if (data.signature_url) {
                 try {
                     const sign = await urlToImg(data.signature_url)
 
-                    /** Convierte de WebP a PNG */
+                    /** Convert from WebP to PNG */
                     const signPng = await sharp(sign).png().toBuffer()
                     doc.image(signPng, {width: 500})
                 } catch (err) {

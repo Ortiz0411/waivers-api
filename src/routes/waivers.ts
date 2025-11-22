@@ -17,7 +17,7 @@ import { genPdf } from "../services/pdfService"
 const router = Router()
 
 
-/** Lista todos los waivers, protegido para solo admin */
+/** List all waivers, protected for admin only */
 router.get("/", valAuth, async (_req, res) => {
 
     try {
@@ -29,7 +29,7 @@ router.get("/", valAuth, async (_req, res) => {
 })
 
 
-/** Obtiene detalles de waiver por id, protegido para solo admin */
+/** Get waiver details by ID, protected for admin only */
 router.get("/:id", valAuth, async (req, res) => {
     
     const id = Number(req.params.id)
@@ -43,7 +43,7 @@ router.get("/:id", valAuth, async (req, res) => {
 })
 
 
-/** Registra un nuevo waiver, publico */
+/** Register a new waiver, public */
 router.post("/", async (req, res) => {
     
     try {
@@ -55,7 +55,7 @@ router.post("/", async (req, res) => {
 })
 
 
-/** Retorna PDF de waiver por id, protegido para solo admin */
+/** Returns PDF waiver by ID, protected for admin only */
 router.get("/:id/pdf", valAuth, async (req, res) => {
 
     const id = Number(req.params.id)

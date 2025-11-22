@@ -1,6 +1,6 @@
 /** 
- * Inicializa cliente de Supabase
- * - Usa URL y service role key
+ * Initialize Supabase client
+ * - Use URL and service role key
  */
 
 import { createClient } from '@supabase/supabase-js'

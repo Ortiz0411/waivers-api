@@ -1,7 +1,7 @@
 /**
- * Envio de correo de confirmacion con nodemailer.
- * - Configuracion SMTP en .env.
- * - Adjunta pdf del waiver ingresado.
+ * Sends confirmation emails with nodemailer.
+ * - SMTP configuration in .env.
+ * - Attaches PDF of the waiver submitted.
  */
 
 /*
@@ -43,13 +43,13 @@ export const sendEmail = async (waiver: waiver) => {
                     <img src="cid:rcrlogo" alt="RCR Logo" style="width:150px; max-width:80%; height:auto;">
                     </div>
 
-                    <!-- TÍTULO -->
+                    <!-- TITLE -->
                     <h2 style="color:#BA251E; margin-bottom:10px; font-size:20px; line-height:1.3;">Waiver Submitted Successfully</h2>
                     <p style="color:#1E1B16; font-size:15px; margin-bottom:18px;">
                     Thank you for submitting your waiver, <strong>${waiver.name}</strong>.
                     </p>
 
-                    <!-- BLOQUE DE TEXTO -->
+                    <!-- TEXT -->
                     <div style="background-color:#FBE03910; border:1px solid #FBE039; border-radius:8px; padding:15px; margin-bottom:18px;">
                     <p style="color:#1E1B16; font-size:14.5px; line-height:1.6; margin:0;">
                         We have received your information and you're all set for your adventure on <br>
@@ -57,7 +57,7 @@ export const sendEmail = async (waiver: waiver) => {
                     </p>
                     </div>
 
-                    <!-- CUERPO -->
+                    <!-- BODY -->
                     <p style="color:#1E1B16; font-size:14.5px; line-height:1.6; margin:0 0 12px 0;">
                     Please arrive <strong>15 minutes prior</strong> to your scheduled tour time.<br>
                     Your waiver in PDF format is attached to this email.

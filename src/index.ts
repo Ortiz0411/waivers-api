@@ -12,6 +12,7 @@ import { monitor } from './scripts/monitor'
 
 const app = express()
 
+
 app.use(cors({
     origin: function (origin, callback) {
         const allowed = [
@@ -24,11 +25,12 @@ app.use(cors({
         if (!origin || allowed.includes(origin) || vercel) {
             callback(null, true);
         } else {
-            callback(new Error("Not allowed by CORS"));
+            callback(new Error("No permitido por CORS"));
         }
     },
     credentials: true,
 }))
+
 
 app.use(helmet())
 app.use(cookieParser())
@@ -43,10 +45,11 @@ app.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok', uptime: process.uptime() })
 })
 
+/*
 app.get('/monitor/vercel', async (_req, res) => {
     const result = await monitor()
     res.json({ alerts: result })
-})
+})*/
 
 /*
 const PORT = Number(process.env.PORT) || 3000

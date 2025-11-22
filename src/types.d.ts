@@ -1,4 +1,4 @@
-// Incluir email: string en caso de guardar correo
+// Include email: string if saving email
 export interface waiver {
 
     id?: number
@@ -38,7 +38,7 @@ export interface waiver {
     risk_level: string
 }
 
-// Incluir email: string en caso de guardar correo
+// Include email: string if saving email
 export type WaiverTable = {
     id: number
     name: string

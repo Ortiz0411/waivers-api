@@ -1,10 +1,10 @@
 /**
- * Rutas de auth
+ * Auth routes
  * 
  * Endpoints:
- * - Post /login : valida credenciales y JWT en cookie
- * - Post /logout : limpia la cookie
- * - GET /me : retorna el usuario autenticado
+ * - Post /login: validates credentials and JWT in cookie
+ * - Post/logout: clears cookie
+ * - GET /me: returns the authenticated user
  */
 
 import { Router } from 'express'
@@ -16,41 +16,53 @@ import rateLimit from 'express-rate-limit'
 const router = Router()
 
 
-/** Limitado de intentos /login (3 intentos cada 15 minutos)*/
+/** Limited login attempts (5 attempts every 15 minutes)*/
 const loginLimit = rateLimit({
     windowMs: 15 * 60 * 1000,
-    limit: 3,
+    limit: 5,
     standardHeaders: true,
     legacyHeaders: false
 })
 
 
-/** Verifica credenciales de usuario, genera cookie*/
+/** Verify user credentials, generate cookie*/
 router.post('/login', loginLimit, async (req, res) => {
-
     const { username, password } = req.body
 
     const adminUser = process.env.ADMIN_USER!
     const adminHash = process.env.ADMIN_HASH!
 
-    if (username !== adminUser) return res.status(401).json({ error: 'Credenciales invalidas' })
-    
-    const ok = await bcrypt.compare(password, adminHash)
-    if (!ok) return res.status(401).json({ error: 'Credenciales invalidas' })
+    // Incorrect user
+    if (username !== adminUser) {
+        res.header("Access-Control-Allow-Origin", process.env.FRONT_LOCAL)
+        res.header("Access-Control-Allow-Credentials", "true")
+        return res.status(401).json({ error: "Usuario o contraseña incorrectos" })
+    }
 
+    // Incorrect password
+    const ok = await bcrypt.compare(password, adminHash)
+    if (!ok) {
+        res.header("Access-Control-Allow-Origin", process.env.FRONT_LOCAL)
+        res.header("Access-Control-Allow-Credentials", "true")
+        return res.status(401).json({ error: "Usuario o contraseña incorrectos" })
+    }
+
+    // Correct credentials
     const token = jwt.sign(
         { sub: 'admin', username },
         process.env.JWT_SECRET!,
         { expiresIn: '7d' }
     )
 
+    res.header("Access-Control-Allow-Origin", process.env.FRONT_LOCAL)
     res.header("Access-Control-Allow-Credentials", "true")
+
     res.cookie(cookie, token, cookieOption())
     return res.json({ ok: true })
 })
 
 
-/** Limpia la cookie de login */
+/** Clear the login cookie */
 router.post('/logout', (_req, res) => {
     res.header("Access-Control-Allow-Credentials", "true")
     res.clearCookie(cookie, cookieOption())
@@ -58,7 +70,7 @@ router.post('/logout', (_req, res) => {
 })
 
 
-/** Retorna el usuario iniciado */
+/** Returns the logged-in user */
 router.get('/me', valAuth, (req, res) => {
     const user = (req as any).user
     return res.json({ user })
