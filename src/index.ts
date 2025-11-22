@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser'
 
 import waiverRouter from './routes/waivers'
 import authRouter from './routes/auth'
-import { monitor } from './scripts/monitor'
+//import { monitor } from './scripts/monitor'
 
 
 const app = express()

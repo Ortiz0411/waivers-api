@@ -2,6 +2,8 @@
  * Monitor the use of Vercel.
  * Returns list of alerts when exceeding 75%
  */
+
+/*
 export async function monitor() {
 
     try {
@@ -48,4 +50,4 @@ export async function monitor() {
         return null
     }
 
-}
+}*/
