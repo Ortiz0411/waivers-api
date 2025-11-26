@@ -51,6 +51,9 @@ router.post('/login', loginLimit, async (req, res) => {
         { expiresIn: '7d' }
     )
 
+    //borrar
+    res.setHeader("Access-Control-Allow-Credentials", "true")
+
     res.cookie(cookie, token, cookieOption())
     return res.json({ ok: true })
 })
