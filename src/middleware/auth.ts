@@ -30,8 +30,8 @@ export function cookieOption(): CookieOptions {
 
     return {
         httpOnly: true,
-        secure: prod,
-        sameSite: prod ? 'none' : 'lax',
+        secure: true,
+        sameSite: "none",
         path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000
     }
