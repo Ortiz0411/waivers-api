@@ -30,10 +30,9 @@ export function cookieOption(): CookieOptions {
 
     return {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure: prod,
+        sameSite: prod ? "none" : "lax",
         path: "/",
-        domain: ".vercel.app",
         maxAge: 7 * 24 * 60 * 60 * 1000
     }
 }
