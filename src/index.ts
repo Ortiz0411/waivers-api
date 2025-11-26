@@ -11,6 +11,43 @@ import authRouter from './routes/auth'
 
 const app = express()
 
+/*
+app.use(cors({
+    origin: [
+        process.env.FRONT_LOCAL!,
+        process.env.FRONT_PROD!
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}))*/
+
+
+
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+
+    const allowed = [
+        process.env.FRONT_LOCAL,
+        process.env.FRONT_PROD
+    ];
+
+    if (origin && allowed.includes(origin)) {
+        res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(200);
+    }
+
+    next();
+})
+
+
 
 app.use(cors({
     origin: [
@@ -21,6 +58,7 @@ app.use(cors({
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }))
+
 
 
 app.use(helmet())
