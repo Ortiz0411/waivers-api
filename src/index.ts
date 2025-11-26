@@ -23,7 +23,13 @@ app.use(cors({
 }))
 
 
-app.use(helmet())
+app.use(
+    helmet({
+        crossOriginResourcePolicy: false,
+        crossOriginEmbedderPolicy: false
+    }))
+
+
 app.use(cookieParser())
 app.use(express.json())
 
