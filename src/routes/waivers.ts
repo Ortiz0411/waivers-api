@@ -10,8 +10,8 @@
 
 import { Router } from "express"
 import { getWaivers, getwaiverById, addWaiver } from "../services/waiverServices"
-import { valAuth } from "../middleware/auth"
 import { genPdf } from "../services/pdfService"
+import { valAuth } from "../middleware/valAuth"
 
 const router = Router()
 
