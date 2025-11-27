@@ -1,5 +1,6 @@
 import { Router } from "express"
 import { supabaseAuth } from "../services/supabase"
+import { valAuth } from "../middleware/valAuth"
 
 const router = Router()
 
@@ -44,6 +45,11 @@ router.post("/login", async (req, res) => {
         return res.status(500).json({ error: "Error interno en login" })
     }
 
+})
+
+router.get("/me", valAuth, (req, res) => {
+    const user = (req as any).user
+    return res.json({ user })
 })
 
 export default router
