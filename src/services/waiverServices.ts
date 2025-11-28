@@ -1,5 +1,7 @@
 import { supabase } from './supabase'
 import { waiver, WaiverTable } from '../types'
+import sharp from 'sharp'
+import crypto from 'crypto'
 
 const table = process.env.DB_TABLE!
 const bucket = process.env.SUPABASE_BUCKET!
@@ -27,28 +29,53 @@ function calcRisk(body: any) {
 }
 
 
-/** Convert WEBP URLs to Buffer */
-function signBuffer(dataUrl: string): Buffer {
 
-    if (!dataUrl || !dataUrl.startsWith("data:image/webp;base64,")) {
-        throw new Error('Firma invalida')
-    }
-    const base64 = dataUrl.replace("data:image/webp;base64,", "")
-    return Buffer.from(base64, 'base64')
+
+
+async function pngToWebP(dataUrl: string): Promise<Buffer> {
+
+    // data:image/png;base64,AAAA...
+    const base64 = dataUrl.replace("data:image/png;base64,", "")
+    const pngBuffer = Buffer.from(base64, "base64")
+
+    // Convertimos a WEBP con sharp
+    const webpBuffer = await sharp(pngBuffer)
+        .webp({ quality: 60 })  // ajusta calidad si quieres
+        .toBuffer()
+
+    return webpBuffer
 }
 
 
-/** Upload the signature to Supabase Storage and return the URL */
 async function uploadsign(dataUrl: string): Promise<string> {
 
-    const buffer = signBuffer(dataUrl)
+    // Convierte PNG (del front) a WEBP
+    const buffer = await pngToWebP(dataUrl)
+
     const name = `${bucket}/${new Date().toISOString().slice(0, 10)}_${crypto.randomUUID()}.webp`
 
-    await supabase.storage.from(bucket!).upload(name, buffer, { contentType: 'image/webp', upsert: false })
+    await supabase.storage
+        .from(bucket!)
+        .upload(name, buffer, {
+            contentType: "image/webp",
+            upsert: false
+        })
 
     const { data } = supabase.storage.from(bucket!).getPublicUrl(name)
     return data.publicUrl
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /** Returns list with basic waiver fields */
