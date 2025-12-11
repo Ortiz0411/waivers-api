@@ -85,7 +85,7 @@ Each waiver can be converted into a **PDF** that includes all submitted informat
      SUPABASE_URL=https://your-instance.supabase.co
      SUPABASE_ROLE=your_service_role_key      # Service role (for DB + Storage)
      SUPABASE_ANON=your_anon_public_key       # Public anon key (for Auth)
-     DB_TABLE=your_waivers_table_name         # Waivers table name
+     DB_TABLE=your_waivers_table_name         # Table name
      SUPABASE_BUCKET=your_signatures_bucket   # Bucket used to store WEBP signatures
 
    # =========================
@@ -104,3 +104,15 @@ Each waiver can be converted into a **PDF** that includes all submitted informat
 4. Development server
    ```bash
    npm run dev
+
+5. Production build
+   ```bash
+   npm run build
+   npm start
+
+---
+
+## Contact
+- Autor: Andrey Ortiz
+- Email: a.ortizmar11@gmail.com
+- LinkedIn: www.linkedin.com/in/andrey-ortiz-m
