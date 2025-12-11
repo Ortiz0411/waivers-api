@@ -12,7 +12,7 @@ router.post("/login", async (req, res) => {
         return res.status(400).json({ error: "username y password son requeridos" })
     }
 
-    const email = `${username}@rinconcorobici.com`
+    const email = `${username}@${process.env.EMAIL_DOMAIN}`;
 
 
     try {
