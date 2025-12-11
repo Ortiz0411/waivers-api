@@ -112,7 +112,7 @@ Each waiver can be converted into a **PDF** that includes all submitted informat
 
 ---
 
-## Contact
+# Contact
 - Autor: Andrey Ortiz
 - Email: a.ortizmar11@gmail.com
 - LinkedIn: www.linkedin.com/in/andrey-ortiz-m
