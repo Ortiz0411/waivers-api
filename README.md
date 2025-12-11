@@ -53,3 +53,6 @@ Each waiver can be converted into a **PDF** that includes all submitted informat
 
 ---
 
+## Getting started
+
+  
