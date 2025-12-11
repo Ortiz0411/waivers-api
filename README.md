@@ -5,6 +5,8 @@ REST API built with **Node.js + Express + TypeScript** to register and manage ra
 Data is stored in **Supabase (PostgreSQL + Storage)**.  
 Each waiver can be converted into a **PDF** that includes all submitted information and the participant’s digital signature.
 
+> This API is currently deployed on **Vercel** as a serverless Express backend.
+
 ---
 
 - REST API endpoints to:
@@ -109,6 +111,13 @@ Each waiver can be converted into a **PDF** that includes all submitted informat
    ```bash
    npm run build
    npm start
+
+---
+
+# Deployment
+This API is deployed on **Vercel** as a serverless Express backend.
+- Environment variables are configured through the Vercel dashboard.
+- The Express `app` exported in `src/index.ts` is used by the Vercel serverless function handler.
 
 ---
 
