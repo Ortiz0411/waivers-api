@@ -49,10 +49,58 @@ Each waiver can be converted into a **PDF** that includes all submitted informat
 - [Helmet](https://github.com/helmetjs/helmet)
 - [CORS](https://github.com/expressjs/cors)
 - [dotenv](https://github.com/motdotla/dotenv)
-- (Optional) [Nodemailer](https://nodemailer.com/) – for confirmation emails.
+- [Nodemailer](https://nodemailer.com/)
 
 ---
 
 ## Getting started
 
-  
+1. Clone the repository
+   ```bash
+   git clone https://github.com/your_user/waivers-api.git
+   cd waivers-api
+
+2. Install dependencies
+   ```bash
+   npm install
+   npm install nodemailer (if needed)
+
+3. Environment variables
+   ```bash
+   # =========================
+   # Server
+   # =========================
+     PORT=4000
+     NODE_ENV=development
+
+   # =========================
+   # CORS (allowed frontends)
+   # =========================
+     FRONT_LOCAL=http://localhost:5173
+     FRONT_PROD=https://your-frontend.vercel.app
+
+   # =========================
+   # Supabase
+   # =========================
+     SUPABASE_URL=https://your-instance.supabase.co
+     SUPABASE_ROLE=your_service_role_key      # Service role (for DB + Storage)
+     SUPABASE_ANON=your_anon_public_key       # Public anon key (for Auth)
+     DB_TABLE=your_waivers_table_name         # Waivers table name
+     SUPABASE_BUCKET=your_signatures_bucket   # Bucket used to store WEBP signatures
+
+   # =========================
+   # Admin
+   # =========================
+     ADMIN_EMAIL=admin@email.com     # Only this email is allowed as admin
+
+   # =========================
+   # SMTP (optional, if you enable emails)
+   # =========================
+     SMTP_HOST=smtp.yourprovider.com
+     SMTP_PORT=587
+     SMTP_USER=example@yourdomain.com
+     SMTP_PASS=your_password
+
+4. Development server
+   ```bash
+   npm run dev
